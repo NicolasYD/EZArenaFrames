@@ -1,0 +1,15 @@
+## Interface: 110207
+## Title: EZ Arena Frames
+## Category: PvP
+## IconTexture: Interface\Icons\Achievement_Featsofstrength_Gladiator_08
+## SavedVariables: EZArenaFramesDB
+## Notes: 
+## Author: Pharmac1st
+## Version: @project-version@
+## X-Curse-Project-ID: 
+
+Libs/Libs.xml
+
+EZArenaFrames.lua
+
+Modules/Healthbar.lua
