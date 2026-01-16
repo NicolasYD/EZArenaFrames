@@ -19,11 +19,23 @@ local InCombatLockdown = InCombatLockdown
 
 -- Core lifecycle hooks
 function EZArenaFrames:OnInitialize()
-
+    self.db = LibStub("AceDB-3.0"):New("EZArenaFramesDB", {
+        profile = {
+            modules = {},
+            anchorFrames = {
+                width = 50,
+                height = 50,
+                spacingY = 100,
+            },
+        },
+    }, true)
+    self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 end
 
 function EZArenaFrames:OnEnable()
-    self:CreateArenaFrames()
+    self:CreateAnchorFrames()
 end
 
 function EZArenaFrames:OnDisable()
@@ -33,28 +45,47 @@ end
 -- Shared state flags
 EZArenaFrames.test = false
 
--- Create frames
-function EZArenaFrames:CreateArenaFrames()
+function EZArenaFrames:RefreshConfig()
+  -- would do some stuff here
+end
+
+-- Create anchor frames
+function EZArenaFrames:CreateAnchorFrames()
     if InCombatLockdown() then return end
 
     self.frames = self.frames or {}
 
     for i = 1, 3 do
         if not self.frames[i] then
-            local name = "EZAF_Arena" .. i
+            local name = "EZAF_Arena" .. i .. "Anchor"
+
             local frame = _G[name] or CreateFrame(
-                "Button",
+                "Frame",
                 name,
-                UIParent,
-                "SecureUnitButtonTemplate"
+                UIParent
             )
 
-            -- frame:SetAttribute("unit", "arena" .. i)
-            frame:SetAttribute("unit", "player") -- for testing
-            frame:SetAttribute("type", "target")
+            local bg = frame:CreateTexture(nil, "BACKGROUND") -- for testing
+                frame.bg = bg
 
-            -- frame:Hide()
             self.frames[i] = frame
         end
+    end
+
+    self:UpdateAnchorFrames()
+end
+
+-- Update anchor frames
+function EZArenaFrames:UpdateAnchorFrames()
+    local settings = self.db.profile.anchorFrames
+
+    for index, frame in ipairs(self.frames) do
+        frame:ClearAllPoints()
+        frame:SetSize(settings.width, settings.height)
+        frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0 - (index-1) * settings.spacingY)
+
+        frame.bg:SetAllPoints()
+        frame.bg:SetColorTexture(0, 0, 0, 1)
+
     end
 end
