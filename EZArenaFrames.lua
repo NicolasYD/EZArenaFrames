@@ -13,6 +13,7 @@ local EZArenaFrames = LibStub("AceAddon-3.0"):NewAddon(
 _G.EZArenaFrames = EZArenaFrames
 
 -- Localize WoW API functions
+local InCombatLockdown = InCombatLockdown
 local CreateFrame = CreateFrame
 local GetArenaOpponentSpec = GetArenaOpponentSpec
 
@@ -35,6 +36,7 @@ function EZArenaFrames:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
     self:CreateAnchorFrames()
+    self:CreateSecureAnchorFrames()
 end
 
 function EZArenaFrames:OnDisable()
@@ -53,7 +55,7 @@ function EZArenaFrames:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
     end
 end
 
-function EZArenaFrames:PLAYER_ENTERING_WORLD(event, isLogin, isReload)
+function EZArenaFrames:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
     for i = 1, 3 do
         local specID = GetArenaOpponentSpec(i)
         if specID and specID > 0 then
@@ -89,6 +91,27 @@ function EZArenaFrames:CreateAnchorFrames()
     self:StyleAnchorFrames()
 end
 
+-- Create secure anchor frames
+function EZArenaFrames:CreateSecureAnchorFrames()
+    if InCombatLockdown() then return end
+
+    self.secureAnchorFrames = self.secureAnchorFrames or {}
+
+    for i = 1, 3 do
+        if not self.secureAnchorFrames[i] then
+            local name = "EZAF_Arena" .. i .. "SecureAnchor"
+
+            local frame = _G[name] or CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
+
+            -- frame:Hide()
+
+            self.secureAnchorFrames[i] = frame
+        end
+    end
+
+    self:StyleSecureAnchorFrames()
+end
+
 -- Style anchor frames
 function EZArenaFrames:StyleAnchorFrames()
     local settings = self.db.profile.anchorFrames
@@ -102,6 +125,18 @@ function EZArenaFrames:StyleAnchorFrames()
         frame.icon:ClearAllPoints()
         frame.icon:SetAllPoints()
         frame.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+    end
+end
+
+function EZArenaFrames:StyleSecureAnchorFrames()
+    if InCombatLockdown() then return end
+
+    local settings = self.db.profile.anchorFrames
+
+    for index, frame in ipairs(self.secureAnchorFrames) do
+        frame:ClearAllPoints()
+        frame:SetPoint("CENTER", UIParent, "CENTER", 0, -(index - 1) * settings.spacingY)
+        frame:SetSize(settings.width, settings.height) -- Invisible frames still need a size or the child frames are not shown
     end
 end
 
