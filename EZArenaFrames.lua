@@ -59,33 +59,31 @@ function EZArenaFrames:CreateAnchorFrames()
         if not self.frames[i] then
             local name = "EZAF_Arena" .. i .. "Anchor"
 
-            local frame = _G[name] or CreateFrame(
-                "Frame",
-                name,
-                UIParent
-            )
+            local frame = _G[name] or CreateFrame("Frame", name, UIParent)
 
-            local bg = frame:CreateTexture(nil, "BACKGROUND") -- for testing
+            if not frame.bg then -- for testing
+                local bg = frame:CreateTexture(nil, "BACKGROUND")
+                bg:SetAllPoints()
+                bg:SetColorTexture(0, 0, 0, 1)
                 frame.bg = bg
+            end
 
             self.frames[i] = frame
         end
     end
 
-    self:UpdateAnchorFrames()
+    self:StyleAnchorFrames()
 end
 
 -- Update anchor frames
-function EZArenaFrames:UpdateAnchorFrames()
+function EZArenaFrames:StyleAnchorFrames()
+    if InCombatLockdown() then return end
+
     local settings = self.db.profile.anchorFrames
 
     for index, frame in ipairs(self.frames) do
         frame:ClearAllPoints()
         frame:SetSize(settings.width, settings.height)
-        frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0 - (index-1) * settings.spacingY)
-
-        frame.bg:SetAllPoints()
-        frame.bg:SetColorTexture(0, 0, 0, 1)
-
+        frame:SetPoint("CENTER", UIParent, "CENTER", 0, -(index - 1) * settings.spacingY)
     end
 end
