@@ -15,6 +15,7 @@ local AceDB = LibStub("AceDB-3.0")
 
 -- Localize WoW API functions
 local CreateFrame = CreateFrame
+local GetArenaOpponentSpec = GetArenaOpponentSpec
 local InCombatLockdown = InCombatLockdown
 
 -- Core lifecycle hooks
@@ -23,9 +24,9 @@ function EZArenaFrames:OnInitialize()
         profile = {
             modules = {},
             anchorFrames = {
-                width = 50,
-                height = 50,
-                spacingY = 100,
+                width = 40,
+                height = 40,
+                spacingY = 80,
             },
         },
     }, true)
@@ -35,6 +36,8 @@ function EZArenaFrames:OnInitialize()
 end
 
 function EZArenaFrames:OnEnable()
+    self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
+
     self:CreateAnchorFrames()
 end
 
@@ -44,6 +47,20 @@ end
 
 -- Shared state flags
 EZArenaFrames.test = false
+
+function EZArenaFrames:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
+    for i = 1, 3 do
+        local specID = GetArenaOpponentSpec(i)
+        if specID and specID > 0 then
+            local name = "EZAF_Arena" .. i .. "Anchor"
+            local frame = _G[name]
+
+            if frame then
+                frame:Show()
+            end
+        end
+    end
+end
 
 function EZArenaFrames:RefreshConfig()
   -- would do some stuff here
@@ -67,6 +84,8 @@ function EZArenaFrames:CreateAnchorFrames()
                 bg:SetColorTexture(0, 0, 0, 1)
                 frame.bg = bg
             end
+
+            frame:Hide()
 
             self.frames[i] = frame
         end
