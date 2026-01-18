@@ -155,8 +155,8 @@ function HealthBar:ColorHealthBar()
                     local r, g, b = color.r, color.g, color.b
                     local parent = _G["EZAF_Arena" .. i .. "Anchor"]
 
-                    if parent and parent.HealthBar and parent.HealthBar.bar then
-                        local bar = parent.HealthBar.bar
+                    if parent and parent.HealthBar then
+                        local bar = parent.HealthBar
 
                         bar:SetStatusBarColor(r, g, b, 1)
                     end

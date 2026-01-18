@@ -17,6 +17,9 @@ local InCombatLockdown = InCombatLockdown
 local CreateFrame = CreateFrame
 local GetArenaOpponentSpec = GetArenaOpponentSpec
 
+-- Shared state flags
+EZArenaFrames.test = false
+
 -- Core lifecycle hooks
 function EZArenaFrames:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("EZArenaFramesDB", {
@@ -29,6 +32,8 @@ function EZArenaFrames:OnInitialize()
             },
         },
     }, true)
+
+    self:RegisterOptions()
 end
 
 function EZArenaFrames:OnEnable()
@@ -43,8 +48,22 @@ function EZArenaFrames:OnDisable()
     self:UnregisterAllEvents()
 end
 
--- Shared state flags
-EZArenaFrames.test = false
+function EZArenaFrames:RegisterOptions()
+    local AceConfig = LibStub("AceConfig-3.0")
+    local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+
+    local options = self:GetOptions()
+
+    AceConfig:RegisterOptionsTable("EZArenaFrames", options)
+    AceConfigDialog:AddToBlizOptions("EZArenaFrames", "EZArenaFrames")
+
+    for _, module in self:IterateModules() do
+        if type(module.GetOptions) == "function" then
+            local name = module.moduleName or module.name
+            options.args[name] = module:GetOptions()
+        end
+    end
+end
 
 function EZArenaFrames:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
     for i = 1, 3 do
@@ -75,7 +94,7 @@ function EZArenaFrames:CreateAnchorFrames()
         if not self.anchorFrames[i] then
             local name = "EZAF_Arena" .. i .. "Anchor"
 
-            local frame = _G[name] or CreateFrame("Frame", name, UIParent)
+            local frame = CreateFrame("Frame", name, UIParent)
 
             if not frame.icon then -- for testing
                 local icon = frame:CreateTexture(nil, "OVERLAY")
@@ -149,6 +168,22 @@ function EZArenaFrames:ShowAnchorFrames(index, show)
             frame:Show()
         else
             frame:Hide()
+        end
+    end
+end
+
+function EZArenaFrames:Test()
+    if not self.test then
+        self.test = true
+
+        for i = 1, 3 do
+            self:ShowAnchorFrames(i, true)
+        end
+    elseif self.test then
+        self.test = false
+
+        for i = 1, 3 do
+            self:ShowAnchorFrames(i, false)
         end
     end
 end

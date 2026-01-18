@@ -13,3 +13,6 @@ Libs/Libs.xml
 EZArenaFrames.lua
 
 Modules/HealthBar.lua
+
+Options/EZArenaFramesOptions.lua
+Options/HealthBarOptions.lua
