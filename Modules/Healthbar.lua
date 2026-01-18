@@ -9,6 +9,7 @@ local HealthBar = EZArenaFrames:NewModule(
 local CreateFrame = CreateFrame
 local GetArenaOpponentSpec = GetArenaOpponentSpec
 local GetClassColor = C_ClassColor.GetClassColor
+local GetClassInfo = C_CreatureInfo.GetClassInfo
 local GetSpecializationInfoByID = GetSpecializationInfoByID
 local InCombatLockdown = InCombatLockdown
 local UnitHealth = UnitHealth
@@ -173,7 +174,7 @@ function HealthBar:UpdateHealthBar(unitToken)
     local parent = _G["EZAF_Arena" .. index .. "Anchor"]
     if not parent or not parent.HealthBar then return end
 
-    local bar = parent.HealthBar.bar
+    local bar = parent.HealthBar
     if not bar then return end
 
     local health = UnitHealth(unitToken)
@@ -193,3 +194,27 @@ function HealthBar:UpdateHealthBar(unitToken)
     end
 end
 
+function HealthBar:Test()
+    if EZArenaFrames.test then
+        for i = 1, 3 do
+            local parent = _G["EZAF_Arena" .. i .. "Anchor"]
+            local bar = parent.HealthBar
+            local text = parent.HealthBar.text
+
+            local classID = math.random(1, 13)
+            local classInfo = GetClassInfo(classID)
+            local color = GetClassColor(classInfo and classInfo.classFile)
+
+            bar:SetStatusBarColor(color.r, color.g, color.b, color.a)
+
+            local maxHealth = 10000000
+            local health = ceil(math.random((0.3 * maxHealth), maxHealth))
+
+            bar:SetMinMaxValues(0, maxHealth)
+            bar:SetValue(health)
+
+            local percent = math.floor((health / maxHealth) * 100)
+            text:SetText(percent .. "%")
+        end
+    end
+end

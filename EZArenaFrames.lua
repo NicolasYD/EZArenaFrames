@@ -186,4 +186,10 @@ function EZArenaFrames:Test()
             self:ShowAnchorFrames(i, false)
         end
     end
+
+    for _, module in self:IterateModules() do
+        if type(module.Test) == "function" then
+            module:Test()
+        end
+    end
 end
