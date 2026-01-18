@@ -13,13 +13,14 @@ local GetClassColor = C_ClassColor.GetClassColor
 local GetClassInfo = C_CreatureInfo.GetClassInfo
 local GetSpecializationInfoByID = GetSpecializationInfoByID
 local InCombatLockdown = InCombatLockdown
+local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 
 local defaults = {
     profile = {
-        width = 100,
-        height = 20,
+        width = 200,
+        height = 50,
         offsetX = 0,
         offsetY = 0,
     },
@@ -38,7 +39,9 @@ end
 function HealthBar:OnEnable()
     self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
+    self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
     self:RegisterEvent("UNIT_HEALTH")
+    self:RegisterEvent("UNIT_MAXHEALTH")
 
     self:CreateHealthBar()
     self:CreateSecureButton()
@@ -56,8 +59,16 @@ function HealthBar:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
     self:ColorHealthBar()
 end
 
-function HealthBar:UNIT_HEALTH(event, unitTarget)
-    self:UpdateHealthBar(unitTarget)
+function HealthBar:UNIT_ABSORB_AMOUNT_CHANGED(event, unitToken)
+    self:UpdateHealthBar(unitToken)
+end
+
+function HealthBar:UNIT_HEALTH(event, unitToken)
+    self:UpdateHealthBar(unitToken)
+end
+
+function HealthBar:UNIT_MAXHEALTH(event, unitToken)
+    self:UpdateHealthBar(unitToken)
 end
 
 function HealthBar:CreateHealthBar()
@@ -66,6 +77,9 @@ function HealthBar:CreateHealthBar()
         if parent and not parent.HealthBar then
 
             local bar = CreateFrame("StatusBar", nil, parent)
+
+            local absorb = bar:CreateTexture(nil, "OVERLAY")
+            bar.absorb = absorb
 
             local bg = bar:CreateTexture(nil, "BACKGROUND")
             bar.bg = bg
@@ -112,7 +126,9 @@ function HealthBar:StyleHealthBar()
             bar:ClearAllPoints()
             bar:SetPoint("TOPLEFT", parent, "TOPRIGHT", settings.offsetX, settings.offsetY)
             bar:SetSize(settings.width, settings.height)
-            bar:SetStatusBarTexture("Interface\\TARGETINGFRAME\\UI-StatusBar")
+            bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+
+            bar.absorb:SetTexture("Interface\\TargetingFrame\\UI-StatusBar")
 
             bar.bg:ClearAllPoints()
             bar.bg:SetAllPoints()
@@ -176,18 +192,33 @@ function HealthBar:UpdateHealthBar(unitToken)
     if not parent or not parent.HealthBar then return end
 
     local bar = parent.HealthBar
-    if not bar then return end
 
     local health = UnitHealth(unitToken)
     local maxHealth = UnitHealthMax(unitToken)
-
-    if maxHealth == 0 then
-        bar:SetValue(0)
-        return
-    end
+    local absorb = UnitGetTotalAbsorbs(unitToken) or 0
 
     bar:SetMinMaxValues(0, maxHealth)
     bar:SetValue(health)
+
+    if bar.absorb then
+        if absorb > 0 then
+            local barWidth = bar:GetWidth()
+            local barHeight = bar:GetHeight()
+
+            local absorbWidth = absorb / maxHealth * barWidth
+            local healthShowing = health / maxHealth * barWidth
+            local healthMissing = (maxHealth - health) / maxHealth * barWidth
+
+            local offsetX = absorbWidth > healthMissing and healthShowing - (absorbWidth - healthMissing) or healthShowing
+
+            bar.absorb:ClearAllPoints()
+            bar.absorb:SetPoint("LEFT", bar, "LEFT", offsetX, 0)
+            bar.absorb:SetSize(absorbWidth, barHeight)
+            bar.absorb:Show()
+        else
+            bar.absorb:Hide()
+        end
+    end
 
     if bar.text then
         local percent = math.floor((health / maxHealth) * 100)

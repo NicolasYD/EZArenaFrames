@@ -112,6 +112,8 @@ function EZArenaFrames:OpenOptions()
 end
 
 function EZArenaFrames:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
+    self.test = false
+
     for i = 1, 3 do
         local specID = GetArenaOpponentSpec(i)
         if specID and specID > 0 then
@@ -121,6 +123,8 @@ function EZArenaFrames:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
 end
 
 function EZArenaFrames:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
+    self.test = false
+
     for i = 1, 3 do
         local specID = GetArenaOpponentSpec(i)
         if specID and specID > 0 then
