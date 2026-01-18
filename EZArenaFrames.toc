@@ -8,7 +8,7 @@
 ## Version: @project-version@
 ## X-Curse-Project-ID: 
 
-Libs/Libs.xml
+Embeds.xml
 
 EZArenaFrames.lua
 
