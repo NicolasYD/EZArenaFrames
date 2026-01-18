@@ -87,8 +87,8 @@ function HealthBar:CreateSecureButton()
 
             local secureButton = CreateFrame("Button", nil, parent, "SecureUnitButtonTemplate")
 
-            secureButton:SetAttribute("unit", "player") -- for testing
-            -- button:SetAttribute("unit", "arena" .. i)
+            -- secureButton:SetAttribute("unit", "player") -- for testing
+            secureButton:SetAttribute("unit", "arena" .. i)
             secureButton:SetAttribute("type1", "target")
             secureButton:RegisterForClicks("AnyDown")
 

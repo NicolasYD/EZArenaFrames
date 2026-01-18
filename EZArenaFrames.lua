@@ -61,8 +61,8 @@ function EZArenaFrames:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingU
         if specID and specID > 0 then
             self:ShowAnchorFrames(i, true)
         else
-            self:ShowAnchorFrames(i, true) -- for testing
-            -- self:ShowAnchorFrames(i, false)
+            -- self:ShowAnchorFrames(i, true) -- for testing
+            self:ShowAnchorFrames(i, false)
         end
     end
 end
@@ -101,9 +101,9 @@ function EZArenaFrames:CreateSecureAnchorFrames()
         if not self.secureAnchorFrames[i] then
             local name = "EZAF_Arena" .. i .. "SecureAnchor"
 
-            local frame = _G[name] or CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
+            local frame = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
 
-            -- frame:Hide()
+            RegisterStateDriver(frame, "visibility", "[@arena"..i..",exists] show; hide")
 
             self.secureAnchorFrames[i] = frame
         end
