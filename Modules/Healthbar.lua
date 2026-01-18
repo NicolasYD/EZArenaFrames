@@ -1,4 +1,5 @@
-local EZArenaFrames = EZArenaFrames
+local ADDON_NAME, NS = ...
+local EZArenaFrames = NS.addon
 
 local HealthBar = EZArenaFrames:NewModule(
     "HealthBar",
@@ -215,6 +216,18 @@ function HealthBar:Test()
 
             local percent = math.floor((health / maxHealth) * 100)
             text:SetText(percent .. "%")
+        end
+    else
+        for i = 1, 3 do
+            local parent = _G["EZAF_Arena" .. i .. "Anchor"]
+            local bar = parent.HealthBar
+            local text = parent.HealthBar.text
+
+            bar:SetStatusBarColor(1, 1, 1, 1)
+            bar:SetMinMaxValues(0, 1)
+            bar:SetValue(1)
+
+            text:SetText(100 .. "%")
         end
     end
 end

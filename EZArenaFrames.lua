@@ -3,6 +3,10 @@ local ADDON_NAME, NS = ...
 
 -- Library references
 local LibStub = LibStub
+local AC = LibStub("AceConfig-3.0")
+local ACD = LibStub("AceConfigDialog-3.0")
+local LDB = LibStub("LibDataBroker-1.1")
+local LDBIcon = LibStub("LibDBIcon-1.0")
 
 local EZArenaFrames = LibStub("AceAddon-3.0"):NewAddon(
     ADDON_NAME,
@@ -10,7 +14,8 @@ local EZArenaFrames = LibStub("AceAddon-3.0"):NewAddon(
     "AceConsole-3.0"
 )
 
-_G.EZArenaFrames = EZArenaFrames
+NS.addon = EZArenaFrames
+EZArenaFrames.LDBIcon = LDBIcon
 
 -- Localize WoW API functions
 local InCombatLockdown = InCombatLockdown
@@ -20,10 +25,34 @@ local GetArenaOpponentSpec = GetArenaOpponentSpec
 -- Shared state flags
 EZArenaFrames.test = false
 
+-- Minimap button
+local minimapDataObject = LDB:NewDataObject("EZArenaFrames", {
+    type = "launcher",
+    icon = "Interface\\Icons\\Ability_Rogue_Shadowstrikes",
+    OnClick = function(_, button)
+        if button == "LeftButton" then
+            EZArenaFrames:OpenOptions()
+        end
+    end,
+    OnTooltipShow = function(tooltip)
+        tooltip:AddLine("EZ Arena Frames")
+        tooltip:AddLine("Left-Click to open options.", 1, 1, 1)
+    end,
+})
+
 -- Core lifecycle hooks
 function EZArenaFrames:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("EZArenaFramesDB", {
         profile = {
+            general ={
+                addon = {
+                    -- Addon Settings
+                    minimap = {
+                        hide = false,
+                        minimapPos = 30,
+                    },
+                },
+            },
             modules = {},
             anchorFrames = {
                 width = 40,
@@ -34,6 +63,9 @@ function EZArenaFrames:OnInitialize()
     }, true)
 
     self:RegisterOptions()
+
+    -- Minimap button
+    LDBIcon:Register("EZArenaFrames", minimapDataObject, self.db.profile.general.addon.minimap)
 end
 
 function EZArenaFrames:OnEnable()
@@ -49,19 +81,33 @@ function EZArenaFrames:OnDisable()
 end
 
 function EZArenaFrames:RegisterOptions()
-    local AceConfig = LibStub("AceConfig-3.0")
-    local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-
     local options = self:GetOptions()
 
-    AceConfig:RegisterOptionsTable("EZArenaFrames", options)
-    AceConfigDialog:AddToBlizOptions("EZArenaFrames", "EZArenaFrames")
+    AC:RegisterOptionsTable("EZArenaFrames", options)
+    ACD:AddToBlizOptions("EZArenaFrames", "EZArenaFrames")
 
     for _, module in self:IterateModules() do
         if type(module.GetOptions) == "function" then
             local name = module.moduleName or module.name
             options.args[name] = module:GetOptions()
         end
+    end
+end
+
+-- Open/close options panel
+function EZArenaFrames:OpenOptions()
+    local openFrame = ACD.OpenFrames["EZArenaFrames"]
+
+    if openFrame and openFrame.frame and openFrame.frame:IsShown() then
+        -- Close options panel if already open
+        ACD:Close("EZArenaFrames")
+    else
+        -- Open options panel
+        ACD:Open("EZArenaFrames")
+
+        -- Set options panel frame settings
+        local frame = ACD.OpenFrames["EZArenaFrames"]
+        frame.frame:SetClampedToScreen(true)
     end
 end
 

@@ -1,4 +1,5 @@
-local EZArenaFrames = _G.EZArenaFrames
+local ADDON_NAME, NS = ...
+local EZArenaFrames = NS.addon
 
 function EZArenaFrames:GetOptions()
     return {
@@ -18,7 +19,26 @@ function EZArenaFrames:GetOptions()
             general = {
                 type = "group",
                 name = "General",
-                args = {},
+                args = {
+                    minimap = {
+                        type = "toggle",
+                        name = "Minimap Button",
+                        desc = "Show the minimap button.",
+                        width = "full",
+                        order = 10,
+                        get = function()
+                            return not EZArenaFrames.db.profile.general.addon.minimap.hide
+                        end,
+                        set = function(_, value)
+                            EZArenaFrames.db.profile.general.addon.minimap.hide = not value
+                            if value then
+                                EZArenaFrames.LDBIcon:Show("EZArenaFrames")
+                            else
+                                EZArenaFrames.LDBIcon:Hide("EZArenaFrames")
+                            end
+                        end,
+                    },
+                },
             },
         },
     }
