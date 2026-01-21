@@ -1,4 +1,4 @@
-## Interface: 110207
+## Interface: 120000
 ## Title: EZ Arena Frames
 ## Category: PvP
 ## IconTexture: Interface\Icons\Ability_Rogue_Shadowstrikes

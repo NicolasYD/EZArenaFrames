@@ -16,14 +16,12 @@ local EZArenaFrames = LibStub("AceAddon-3.0"):NewAddon(
 
 NS.addon = EZArenaFrames
 EZArenaFrames.LDBIcon = LDBIcon
+EZArenaFrames.test = false
 
 -- Localize WoW API functions
 local InCombatLockdown = InCombatLockdown
 local CreateFrame = CreateFrame
 local GetArenaOpponentSpec = GetArenaOpponentSpec
-
--- Shared state flags
-EZArenaFrames.test = false
 
 -- Minimap button
 local minimapDataObject = LDB:NewDataObject("EZArenaFrames", {
@@ -40,29 +38,25 @@ local minimapDataObject = LDB:NewDataObject("EZArenaFrames", {
     end,
 })
 
--- Core lifecycle hooks
 function EZArenaFrames:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("EZArenaFramesDB", {
         profile = {
             general ={
                 addon = {
-                    -- Addon Settings
                     minimap = {
                         hide = false,
                         minimapPos = 30,
                     },
                 },
             },
-            modules = {},
             anchorFrames = {
                 width = 40,
                 height = 40,
                 spacingY = 80,
             },
+            modules = {},
         },
     }, true)
-
-    self:RegisterOptions()
 
     -- Minimap button
     LDBIcon:Register("EZArenaFrames", minimapDataObject, self.db.profile.general.addon.minimap)
@@ -71,6 +65,8 @@ end
 function EZArenaFrames:OnEnable()
     self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+    self:RegisterOptions()
 
     self:CreateAnchorFrames()
     self:CreateSecureAnchorFrames()
@@ -130,7 +126,6 @@ function EZArenaFrames:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingU
         if specID and specID > 0 then
             self:ShowAnchorFrames(i, true)
         else
-            -- self:ShowAnchorFrames(i, true) -- for testing
             self:ShowAnchorFrames(i, false)
         end
     end
@@ -140,14 +135,21 @@ end
 function EZArenaFrames:CreateAnchorFrames()
     self.anchorFrames = self.anchorFrames or {}
 
+    local settings = self.db.profile.anchorFrames
+
     for i = 1, 3 do
         if not self.anchorFrames[i] then
             local name = "EZAF_Arena" .. i .. "Anchor"
 
             local frame = CreateFrame("Frame", name, UIParent)
 
+            frame:SetSize(settings.width, settings.height) -- Invisible frames still need a size or the child frames are not shown
+
             if not frame.icon then -- for testing
                 local icon = frame:CreateTexture(nil, "OVERLAY")
+
+                icon:SetAllPoints()
+                icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
                 frame.icon = icon
             end
 
@@ -166,11 +168,15 @@ function EZArenaFrames:CreateSecureAnchorFrames()
 
     self.secureAnchorFrames = self.secureAnchorFrames or {}
 
+    local settings = self.db.profile.anchorFrames
+
     for i = 1, 3 do
         if not self.secureAnchorFrames[i] then
             local name = "EZAF_Arena" .. i .. "SecureAnchor"
 
             local frame = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
+
+            frame:SetSize(settings.width, settings.height) -- Invisible frames still need a size or the child frames are not shown
 
             RegisterStateDriver(frame, "visibility", "[@arena"..i..",exists] show; hide")
 
@@ -188,12 +194,6 @@ function EZArenaFrames:StyleAnchorFrames()
     for index, frame in ipairs(self.anchorFrames) do
         frame:ClearAllPoints()
         frame:SetPoint("CENTER", UIParent, "CENTER", 0, -(index - 1) * settings.spacingY)
-        frame:SetSize(settings.width, settings.height) -- Invisible frames still need a size or the child frames are not shown
-
-        -- for testing
-        frame.icon:ClearAllPoints()
-        frame.icon:SetAllPoints()
-        frame.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
     end
 end
 
@@ -205,13 +205,11 @@ function EZArenaFrames:StyleSecureAnchorFrames()
     for index, frame in ipairs(self.secureAnchorFrames) do
         frame:ClearAllPoints()
         frame:SetPoint("CENTER", UIParent, "CENTER", 0, -(index - 1) * settings.spacingY)
-        frame:SetSize(settings.width, settings.height) -- Invisible frames still need a size or the child frames are not shown
     end
 end
 
 function EZArenaFrames:ShowAnchorFrames(index, show)
-    local name = "EZAF_Arena" .. index .. "Anchor"
-    local frame = _G[name]
+    local frame = self.anchorFrames[index]
 
     if frame then
         if show then
@@ -238,7 +236,7 @@ function EZArenaFrames:Test()
     end
 
     for _, module in self:IterateModules() do
-        if type(module.Test) == "function" then
+        if module:IsEnabled() and type(module.Test) == "function" then
             module:Test()
         end
     end
