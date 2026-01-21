@@ -19,10 +19,12 @@ local UnitHealthMax = UnitHealthMax
 
 local defaults = {
     profile = {
-        width = 200,
-        height = 50,
+        width = 160,
+        height = 30,
         offsetX = 0,
         offsetY = 0,
+        maxWidth = 300,
+        maxHeight =100,
     },
 }
 
@@ -39,7 +41,6 @@ end
 function HealthBar:OnEnable()
     self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
-    self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED")
     self:RegisterEvent("UNIT_HEALTH")
     self:RegisterEvent("UNIT_MAXHEALTH")
 
@@ -59,10 +60,6 @@ function HealthBar:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
     self:ColorHealthBar()
 end
 
-function HealthBar:UNIT_ABSORB_AMOUNT_CHANGED(event, unitToken)
-    self:UpdateHealthBar(unitToken)
-end
-
 function HealthBar:UNIT_HEALTH(event, unitToken)
     self:UpdateHealthBar(unitToken)
 end
@@ -73,19 +70,16 @@ end
 
 function HealthBar:CreateHealthBar()
     for i = 1, 3 do
-        local parent = _G["EZAF_Arena" .. i .. "Anchor"]
+        local parent = EZArenaFrames.anchorFrames[i]
+
         if parent and not parent.HealthBar then
 
             local bar = CreateFrame("StatusBar", nil, parent)
 
-            local absorb = bar:CreateTexture(nil, "OVERLAY")
-            bar.absorb = absorb
-
             local bg = bar:CreateTexture(nil, "BACKGROUND")
+            bg:SetAllPoints()
+            bg:SetColorTexture(0, 0, 0, 1)
             bar.bg = bg
-
-            local text = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            bar.text = text
 
             parent.HealthBar = bar
         end
@@ -98,12 +92,11 @@ function HealthBar:CreateSecureButton()
     if InCombatLockdown() then return end
 
     for i = 1, 3 do
-        local parent = _G["EZAF_Arena" .. i .. "SecureAnchor"]
+        local parent = EZArenaFrames.secureAnchorFrames[i]
+
         if parent and not parent.HealthBar then
 
             local secureButton = CreateFrame("Button", nil, parent, "SecureUnitButtonTemplate")
-
-            -- secureButton:SetAttribute("unit", "player") -- for testing
             secureButton:SetAttribute("unit", "arena" .. i)
             secureButton:SetAttribute("type1", "target")
             secureButton:RegisterForClicks("AnyDown")
@@ -119,7 +112,8 @@ function HealthBar:StyleHealthBar()
     local settings = self.db.profile
 
     for i = 1, 3 do
-        local parent = _G["EZAF_Arena" .. i .. "Anchor"]
+        local parent = EZArenaFrames.anchorFrames[i]
+
         if parent and parent.HealthBar then
             local bar = parent.HealthBar
 
@@ -127,16 +121,6 @@ function HealthBar:StyleHealthBar()
             bar:SetPoint("TOPLEFT", parent, "TOPRIGHT", settings.offsetX, settings.offsetY)
             bar:SetSize(settings.width, settings.height)
             bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
-
-            bar.absorb:SetTexture("Interface\\TargetingFrame\\UI-StatusBar")
-
-            bar.bg:ClearAllPoints()
-            bar.bg:SetAllPoints()
-            bar.bg:SetColorTexture(0, 0, 0, 1)
-
-            bar.text:ClearAllPoints()
-            bar.text:SetPoint("CENTER")
-            bar.text:SetText("100%") -- for testing
         end
     end
 end
@@ -147,7 +131,8 @@ function HealthBar:StyleSecureButton()
     local settings = self.db.profile
 
     for i = 1, 3 do
-        local parent = _G["EZAF_Arena" .. i .. "SecureAnchor"]
+        local parent = EZArenaFrames.secureAnchorFrames[i]
+
         if parent and parent.HealthBar then
             local secureButton = parent.HealthBar
 
@@ -171,7 +156,7 @@ function HealthBar:ColorHealthBar()
 
                 if color then
                     local r, g, b = color.r, color.g, color.b
-                    local parent = _G["EZAF_Arena" .. i .. "Anchor"]
+                    local parent = EZArenaFrames.anchorFrames[i]
 
                     if parent and parent.HealthBar then
                         local bar = parent.HealthBar
@@ -188,50 +173,24 @@ function HealthBar:UpdateHealthBar(unitToken)
     local index = unitToIndex[unitToken]
     if not index then return end
 
-    local parent = _G["EZAF_Arena" .. index .. "Anchor"]
+    local parent = EZArenaFrames.anchorFrames[index]
+
     if not parent or not parent.HealthBar then return end
 
     local bar = parent.HealthBar
 
     local health = UnitHealth(unitToken)
     local maxHealth = UnitHealthMax(unitToken)
-    local absorb = UnitGetTotalAbsorbs(unitToken) or 0
 
     bar:SetMinMaxValues(0, maxHealth)
     bar:SetValue(health)
-
-    if bar.absorb then
-        if absorb > 0 then
-            local barWidth = bar:GetWidth()
-            local barHeight = bar:GetHeight()
-
-            local absorbWidth = absorb / maxHealth * barWidth
-            local healthShowing = health / maxHealth * barWidth
-            local healthMissing = (maxHealth - health) / maxHealth * barWidth
-
-            local offsetX = absorbWidth > healthMissing and healthShowing - (absorbWidth - healthMissing) or healthShowing
-
-            bar.absorb:ClearAllPoints()
-            bar.absorb:SetPoint("LEFT", bar, "LEFT", offsetX, 0)
-            bar.absorb:SetSize(absorbWidth, barHeight)
-            bar.absorb:Show()
-        else
-            bar.absorb:Hide()
-        end
-    end
-
-    if bar.text then
-        local percent = math.floor((health / maxHealth) * 100)
-        bar.text:SetText(percent .. "%")
-    end
 end
 
 function HealthBar:Test()
     if EZArenaFrames.test then
         for i = 1, 3 do
-            local parent = _G["EZAF_Arena" .. i .. "Anchor"]
+            local parent = EZArenaFrames.anchorFrames[i]
             local bar = parent.HealthBar
-            local text = parent.HealthBar.text
 
             local classID = math.random(1, 13)
             local classInfo = GetClassInfo(classID)
@@ -244,21 +203,15 @@ function HealthBar:Test()
 
             bar:SetMinMaxValues(0, maxHealth)
             bar:SetValue(health)
-
-            local percent = math.floor((health / maxHealth) * 100)
-            text:SetText(percent .. "%")
         end
     else
         for i = 1, 3 do
-            local parent = _G["EZAF_Arena" .. i .. "Anchor"]
+            local parent = EZArenaFrames.anchorFrames[i]
             local bar = parent.HealthBar
-            local text = parent.HealthBar.text
 
             bar:SetStatusBarColor(1, 1, 1, 1)
             bar:SetMinMaxValues(0, 1)
             bar:SetValue(1)
-
-            text:SetText(100 .. "%")
         end
     end
 end
