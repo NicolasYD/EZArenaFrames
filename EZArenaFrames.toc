@@ -12,7 +12,9 @@ Embeds.xml
 
 EZArenaFrames.lua
 
+Modules/DRTracker.lua
 Modules/HealthBar.lua
 
+Options/DRTrackerOptions.lua
 Options/EZArenaFramesOptions.lua
 Options/HealthBarOptions.lua

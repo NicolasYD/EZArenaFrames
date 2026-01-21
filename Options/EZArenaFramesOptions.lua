@@ -12,6 +12,7 @@ function EZArenaFrames:GetOptions()
                 type = "execute",
                 name = "Test Mode",
                 desc = "Toggle Test Mode",
+                order = 10,
                 func = function()
                     if type(EZArenaFrames.Test) == "function" then
                         EZArenaFrames:Test()
@@ -21,6 +22,7 @@ function EZArenaFrames:GetOptions()
             general = {
                 type = "group",
                 name = "General",
+                order = 20,
                 args = {
                     addon = {
                         type = "group",

@@ -13,7 +13,6 @@ local GetClassColor = C_ClassColor.GetClassColor
 local GetClassInfo = C_CreatureInfo.GetClassInfo
 local GetSpecializationInfoByID = GetSpecializationInfoByID
 local InCombatLockdown = InCombatLockdown
-local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 

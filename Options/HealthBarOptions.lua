@@ -3,12 +3,13 @@ local EZArenaFrames = NS.addon
 
 local HealthBar = EZArenaFrames:GetModule("HealthBar")
 
-function HealthBar:GetOptions()
+function HealthBar:GetOptions(moduleOrder)
     local settings = self.db.profile
 
     return {
         type = "group",
         name = "Health Bar",
+        order = moduleOrder,
         args = {
             size = {
                 type = "group",

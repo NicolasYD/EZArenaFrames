@@ -78,6 +78,8 @@ end
 
 function EZArenaFrames:RegisterOptions()
     local options = self:GetOptions()
+    local startingOrder = options.args.general.order
+    local moduleOrder = startingOrder + 10
 
     AC:RegisterOptionsTable("EZArenaFrames", options)
     ACD:AddToBlizOptions("EZArenaFrames", "EZArenaFrames")
@@ -85,8 +87,10 @@ function EZArenaFrames:RegisterOptions()
     for _, module in self:IterateModules() do
         if type(module.GetOptions) == "function" then
             local name = module.moduleName or module.name
-            options.args[name] = module:GetOptions()
+            options.args[name] = module:GetOptions(moduleOrder)
         end
+
+        moduleOrder = moduleOrder + 10
     end
 end
 
