@@ -1,9 +1,9 @@
 local ADDON_NAME, NS = ...
 local EZArenaFrames = NS.addon
 
-local HealthBar = EZArenaFrames:GetModule("Outline")
+local Outline = EZArenaFrames:GetModule("Outline")
 
-function HealthBar:GetOptions(moduleOrder)
+function Outline:GetOptions(moduleOrder)
     local settings = self.db.profile
 
     return {
