@@ -8,7 +8,7 @@ function PowerBar:GetOptions(moduleOrder)
 
     return {
         type = "group",
-        name = "PowerBar",
+        name = "Power Bar",
         order = moduleOrder,
         args = {
 
