@@ -2,6 +2,6 @@
 ..\FrameXML\UI.xsd">
     <Script file="EZArenaFramesOptions.lua"/>
     <Script file="HealthBarOptions.lua"/>
-    <Script file="HighlightOptions.lua"/>
+    <Script file="OutlineOptions.lua"/>
 	<Script file="DRTrackerOptions.lua"/>
 </Ui>

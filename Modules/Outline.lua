@@ -1,8 +1,8 @@
 local ADDON_NAME, NS = ...
 local EZArenaFrames = NS.addon
 
-local Highlight = EZArenaFrames:NewModule(
-    "Highlight",
+local Outline = EZArenaFrames:NewModule(
+    "Outline",
     "AceEvent-3.0"
 )
 
@@ -21,14 +21,15 @@ local unitToIndex = {
     arena3 = 3,
 }
 
-function Highlight:OnInitialize()
-    self.db = EZArenaFrames.db:RegisterNamespace("Highlight", defaults)
+function Outline:OnInitialize()
+    self.db = EZArenaFrames.db:RegisterNamespace("Outline", defaults)
 end
 
-function Highlight:OnEnable()
+function Outline:OnEnable()
 
+    --self:CreateTargetOutline()
 end
 
-function Highlight:OnDisable()
+function Outline:OnDisable()
     self:UnregisterAllEvents()
 end
