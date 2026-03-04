@@ -18,7 +18,9 @@ local defaults = {
         offsetX = -5,
         offsetY = 0,
         grow = "LEFT",
+
         drawBling = false,
+        setReverse = true,
 
         drCategories = {
             -- Root
@@ -176,6 +178,7 @@ function DRTracker:StyleDRFrames()
                 end
                 drFrame:SetSize(settings.size, settings.size)
                 drFrame:SetDrawBling(settings.drawBling)
+                drFrame:SetReverse(settings.setReverse)
 
                 drFrame.icon:SetTexture(GetSpellTexture(settings.drCategories[drCategory].fallbackIcon))
 
