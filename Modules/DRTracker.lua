@@ -7,6 +7,7 @@ local DRTracker = EZArenaFrames:NewModule(
 )
 
 -- Localize WoW API functions
+local IsInInstance = IsInInstance
 local CreateFrame = CreateFrame
 local GetSpellTexture = C_Spell.GetSpellTexture
 local GetAllSpellDiminishCategories = C_SpellDiminish.GetAllSpellDiminishCategories
@@ -103,6 +104,10 @@ function DRTracker:OnDisable()
 end
 
 function DRTracker:UNIT_SPELL_DIMINISH_CATEGORY_STATE_UPDATED(event, unitTarget, trackerInfo)
+    local _, instanceType = IsInInstance()
+
+    if instanceType ~= "arena" then return end
+
     -- DevTools_Dump(trackerInfo)
 end
 
