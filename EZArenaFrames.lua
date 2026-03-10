@@ -18,10 +18,34 @@ NS.addon = EZArenaFrames
 EZArenaFrames.LDBIcon = LDBIcon
 EZArenaFrames.test = false
 
+-- Global table for test mode
+EZArenaFrames.testTable = {
+    arena1 = {
+        classID = nil,
+        specID = nil,
+        raceID = nil,
+    },
+    arena2 = {
+        classID = nil,
+        specID = nil,
+        raceID = nil,
+    },
+    arena3 = {
+        classID = nil,
+        specID = nil,
+        raceID = nil,
+    },
+}
+
 -- Localize WoW API functions
 local InCombatLockdown = InCombatLockdown
 local CreateFrame = CreateFrame
 local GetArenaOpponentSpec = GetArenaOpponentSpec
+local UnitClass = UnitClass
+local GetSpecialization = C_SpecializationInfo.GetSpecialization
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
+local UnitRace = UnitRace
+
 
 -- Minimap button
 local minimapDataObject = LDB:NewDataObject("EZArenaFrames", {
@@ -224,9 +248,41 @@ function EZArenaFrames:ShowAnchorFrames(index, show)
     end
 end
 
+function EZArenaFrames:UpdateTestTable()
+
+    function SetTestTableIDs(unitToken)
+        local classIDs = EZArenaFrames.classIDs
+        local classID = math.random(#classIDs)
+
+        local specIDs = EZArenaFrames.classIDs[classID].specIDs
+        local specID = math.random(#specIDs)
+
+        local raceIDs = EZArenaFrames.classIDs[classID].raceIDs
+        local raceID = math.random(#raceIDs)
+
+        EZArenaFrames.testTable[unitToken]["classID"] = classID
+        EZArenaFrames.testTable[unitToken]["specID"] = specID
+        EZArenaFrames.testTable[unitToken]["raceID"] = raceID
+    end
+
+    local _, _, classID = UnitClass("player")
+    local specIndex = GetSpecialization()
+    local specID = GetSpecializationInfo(specIndex)
+    local _, _, raceID = UnitRace("player")
+
+    self.testTable.arena1["classID"] = classID
+    self.testTable.arena1["specID"] = specID
+    self.testTable.arena1["specID"] = raceID
+
+    SetTestTableIDs("arena2")
+    SetTestTableIDs("arena3")
+end
+
 function EZArenaFrames:Test()
     if not self.test then
         self.test = true
+
+        self:UpdateTestTable()
 
         for i = 1, 3 do
             self:ShowAnchorFrames(i, true)
