@@ -12,6 +12,8 @@ Embeds.xml
 
 EZArenaFrames.lua
 
+TestMode/TestMode.xml
+
 Modules/Modules.xml
 
 Options/Options.xml
