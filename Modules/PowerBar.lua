@@ -7,6 +7,7 @@ local PowerBar = EZArenaFrames:NewModule(
 )
 
 -- Localize WoW API functions
+local IsInInstance = IsInInstance
 local CreateFrame = CreateFrame
 local UnitPowerType = UnitPowerType
 local GetArenaOpponentSpec = GetArenaOpponentSpec
@@ -27,6 +28,8 @@ local defaults = {
         maxHeight =100,
     },
 }
+
+local instanceType = nil
 
 local unitToIndex = {
     arena1 = 1,
@@ -54,22 +57,34 @@ function PowerBar:OnDisable()
 end
 
 function PowerBar:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
+    if instanceType ~= "arena" then return end
+
     self:ColorPowerBar()
 end
 
 function PowerBar:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
+    _, instanceType = IsInInstance()
+
+    if instanceType ~= "arena" then return end
+
     self:ColorPowerBar()
 end
 
 function PowerBar:UNIT_POWER_FREQUENT(event, unitToken)
+    if instanceType ~= "arena" then return end
+
     self:UpdatePowerBar(unitToken)
 end
 
 function PowerBar:UNIT_MAXPOWER(event, unitToken)
+    if instanceType ~= "arena" then return end
+
     self:UpdatePowerBar(unitToken)
 end
 
 function PowerBar:UNIT_DISPLAYPOWER(event, unitToken)
+    if instanceType ~= "arena" then return end
+
     self:UpdatePowerBar(unitToken)
 end
 
