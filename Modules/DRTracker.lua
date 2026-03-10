@@ -103,7 +103,7 @@ function DRTracker:OnDisable()
 end
 
 function DRTracker:UNIT_SPELL_DIMINISH_CATEGORY_STATE_UPDATED(event, unitTarget, trackerInfo)
-    DevTools_Dump(trackerInfo)
+    -- DevTools_Dump(trackerInfo)
 end
 
 function DRTracker:CreateDRFrames()

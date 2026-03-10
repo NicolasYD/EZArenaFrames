@@ -2,6 +2,6 @@
 ..\FrameXML\UI.xsd">
 	<Script file="DRTracker.lua"/>
     <Script file="HealthBar.lua"/>
-    <Script file="Outline.lua"/>
     <Script file="PowerBar.lua"/>
+    <Script file="Outline.lua"/>
 </Ui>

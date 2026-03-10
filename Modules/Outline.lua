@@ -18,8 +18,8 @@ local defaults = {
         target = {
             topleftFrame = "HealthBar",
             toprightFrame = "HealthBar",
-            bottomleftFrame = "HealthBar",
-            bottomrightFrame = "HealthBar",
+            bottomleftFrame = "PowerBar",
+            bottomrightFrame = "PowerBar",
             offset = 0,
             thickness = 1,
             color = {r = 1, g = 1, b = 0, a = 1},
@@ -29,8 +29,8 @@ local defaults = {
         focus = {
             topleftFrame = "HealthBar",
             toprightFrame = "HealthBar",
-            bottomleftFrame = "HealthBar",
-            bottomrightFrame = "HealthBar",
+            bottomleftFrame = "PowerBar",
+            bottomrightFrame = "PowerBar",
             offset = -1,
             thickness = 1,
             color = {r = 1, g = 0, b = 0, a = 1},
