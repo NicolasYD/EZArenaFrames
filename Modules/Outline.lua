@@ -49,6 +49,7 @@ function Outline:OnInitialize()
 end
 
 function Outline:OnEnable()
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("PLAYER_TARGET_CHANGED")
     self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 
@@ -57,6 +58,10 @@ end
 
 function Outline:OnDisable()
     self:UnregisterAllEvents()
+end
+
+function Outline:PLAYER_ENTERING_WORLD()
+    self:HideAllOutlines()
 end
 
 function Outline:PLAYER_TARGET_CHANGED()
@@ -182,6 +187,22 @@ function Outline:StyleOutlines()
             local border = parent.focusOutline
 
             SetAttributes(border, parent, "focus")
+        end
+    end
+end
+
+function Outline:HideAllOutlines()
+    for i = 1, 3 do
+        local parent = EZArenaFrames.anchorFrames[i]
+
+        if parent then
+            if parent.targetOutline then
+                parent.targetOutline:Hide()
+            end
+
+            if parent.focusOutline then
+                parent.focusOutline:Hide()
+            end
         end
     end
 end
