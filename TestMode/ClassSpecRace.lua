@@ -6,9 +6,21 @@ EZArenaFrames.classIDs = {
 	-- Warrior
 	[1] = {
 		specIDs = {
-			71, -- Arms
-			72, -- Fury
-			73, -- Protection
+
+			-- Arms
+			[71] = {
+				powerType = 1, -- Rage
+			},
+
+			-- Fury
+			[72] = {
+				powerType = 1, -- Rage
+			},
+
+			-- Protection
+			[73] = {
+				powerType = 1, -- Rage
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -47,9 +59,21 @@ EZArenaFrames.classIDs = {
 	-- Paladin
 	[2] = {
 		specIDs = {
-			65, -- Holy
-			66, -- Protection
-			70, -- Retribution
+
+			-- Holy
+			[65] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Protection
+			[66] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Retribution
+			[70] = {
+				powerType = 0, -- Mana
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -69,9 +93,21 @@ EZArenaFrames.classIDs = {
 	-- Hunter
 	[3] = {
 		specIDs = {
-			253, -- Beast Mastery
-			254, -- Marksmanship
-			255, -- Survival
+
+			-- Beast Mastery
+			[253] = {
+				powerType = 2, -- Focus
+			},
+
+			-- Marksmanship
+			[254] = {
+				powerType = 2, -- Focus
+			},
+
+			-- Survival
+			[255] = {
+				powerType = 2, -- Focus
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -110,9 +146,21 @@ EZArenaFrames.classIDs = {
 	-- Rogue
 	[4] = {
 		specIDs = {
-			259, -- Assassination
-			260, -- Outlaw
-			261, -- Subtlety
+
+			-- Assassination
+			[259] = {
+				powerType = 3, -- Energy
+			},
+
+			-- Outlaw
+			[260] = {
+				powerType = 3, -- Energy
+			},
+
+			-- Subtlety
+			[261] = {
+				powerType = 3, -- Energy
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -151,9 +199,21 @@ EZArenaFrames.classIDs = {
 	-- Priest
 	[5] = {
 		specIDs = {
-			256, -- Discipline
-			257, -- Holy
-			258, -- Shadow
+
+			-- Discipline
+			[256] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Holy
+			[257] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Shadow
+			[258] = {
+				powerType = 0, -- Mana
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -192,9 +252,21 @@ EZArenaFrames.classIDs = {
 	-- Death Knight
 	[6] = {
 		specIDs = {
-			250, -- Blood
-			251, -- Frost
-			252, -- Unholy
+
+			-- Blood
+			[250] = {
+				powerType = 6, -- Runic Power
+			},
+
+			-- Frost
+			[251] = {
+				powerType = 6, -- Runic Power
+			},
+
+			-- Unholy
+			[252] = {
+				powerType = 6, -- Runic Power
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -227,9 +299,21 @@ EZArenaFrames.classIDs = {
 	-- Shaman
 	[7] = {
 		specIDs = {
-			262, -- Elemental
-			263, -- Enhancement
-			264, -- Restoration
+
+			-- Elemental
+			[262] = {
+				powerType = 11, -- Maelstrom
+			},
+
+			-- Enhancement
+			[263] = {
+				powerType = 11, -- Maelstrom
+			},
+
+			-- Restoration
+			[264] = {
+				powerType = 0, -- Mana
+			},
 		},
 		raceIDs = {
 			2, -- Orc
@@ -257,9 +341,21 @@ EZArenaFrames.classIDs = {
 	-- Mage
 	[8] = {
 		specIDs = {
-			62, -- Arcane
-			63, -- Fire
-			64, -- Frost
+
+			-- Arcane
+			[62] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Fire
+			[63] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Frost
+			[64] = {
+				powerType = 0, -- Mana
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -298,9 +394,21 @@ EZArenaFrames.classIDs = {
 	-- Warlock
 	[9] = {
 		specIDs = {
-			265, -- Affliction
-			266, -- Demonology
-			267, -- Destruction
+
+			-- Affliction
+			[265] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Demonology
+			[266] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Destruction
+			[267] = {
+				powerType = 0, -- Mana
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -339,9 +447,21 @@ EZArenaFrames.classIDs = {
 	-- Monk
 	[10] = {
 		specIDs = {
-			268, -- Brewmaster
-			269, -- Windwalker
-			270, -- Mistweaver
+
+			-- Brewmaster
+			[268] = {
+				powerType = 3, -- Energy
+			},
+
+			-- Windwalker
+			[269] = {
+				powerType = 3, -- Energy
+			},
+
+			-- Mistweaver
+			[270] = {
+				powerType = 0, -- Mana
+			},
 		},
 		raceIDs = {
 			1, -- Human
@@ -378,10 +498,26 @@ EZArenaFrames.classIDs = {
 	-- Druid
 	[11] = {
 		specIDs = {
-			102, -- Balance
-			103, -- Feral
-			104, -- Guardian
-			105, -- Restoration
+
+			-- Balance
+			[102] = {
+				powerType = 8, -- Astral Power
+			},
+
+			-- Feral
+			[103] = {
+				powerType = 3, -- Energy
+			},
+
+			-- Guardian
+			[104] = {
+				powerType = 1, -- Rage
+			},
+
+			-- Restoration
+			[105] = {
+				powerType = 0, -- Mana
+			},
 		},
 		raceIDs = {
 			4, -- Night Elf
@@ -396,9 +532,21 @@ EZArenaFrames.classIDs = {
 	-- Demon Hunter
 	[12] = {
 		specIDs = {
-			577, -- Havoc
-			581, -- Vengeance
-			583, -- Devourer
+
+			-- Havoc
+			[577] = {
+				powerType = 17, -- Fury
+			},
+
+			-- Vengeance
+			[581] = {
+				powerType = 17, -- Fury
+			},
+
+			-- Devourer
+			[583] = {
+				powerType = 17, -- Fury
+			},
 		},
 		raceIDs = {
 			4, -- Night Elf
@@ -409,9 +557,21 @@ EZArenaFrames.classIDs = {
 	-- Evoker
 	[13] = {
 		specIDs = {
-			1467, -- Devastation
-			1468, -- Preservation
-			1473, -- Augmentation
+
+			-- Devastation
+			[1467] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Preservation
+			[1468] = {
+				powerType = 0, -- Mana
+			},
+
+			-- Augmentation
+			[1473] = {
+				powerType = 0, -- Mana
+			},
 		},
 		raceIDs = {
 			52, -- Dracthyr (Alliance)
