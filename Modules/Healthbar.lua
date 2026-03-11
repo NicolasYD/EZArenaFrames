@@ -7,6 +7,7 @@ local HealthBar = EZArenaFrames:NewModule(
 )
 
 -- Localize WoW API functions
+local IsInInstance = IsInInstance
 local CreateFrame = CreateFrame
 local GetArenaOpponentSpec = GetArenaOpponentSpec
 local GetClassColor = C_ClassColor.GetClassColor
@@ -26,6 +27,8 @@ local defaults = {
         maxHeight =100,
     },
 }
+
+local instanceType = nil
 
 local unitToIndex = {
     arena1 = 1,
@@ -52,19 +55,39 @@ function HealthBar:OnDisable()
 end
 
 function HealthBar:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
+    if instanceType ~= "arena" then return end
+
     self:ColorHealthBar()
 end
 
 function HealthBar:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
+    _, instanceType = IsInInstance()
+
+    if instanceType ~= "arena" then return end
+
     self:ColorHealthBar()
 end
 
 function HealthBar:UNIT_HEALTH(event, unitToken)
-    self:UpdateHealthBar(unitToken)
+    if not EZArenaFrames.test then
+
+        if instanceType ~= "arena" then return end
+
+        self:UpdateHealthBar(unitToken)
+    else
+        self:UpdateHealthBar("arena1")
+    end
 end
 
 function HealthBar:UNIT_MAXHEALTH(event, unitToken)
-    self:UpdateHealthBar(unitToken)
+    if not EZArenaFrames.test then
+
+        if instanceType ~= "arena" then return end
+
+        self:UpdateHealthBar(unitToken)
+    else
+        self:UpdateHealthBar("arena1")
+    end
 end
 
 function HealthBar:CreateHealthBar()
@@ -178,8 +201,16 @@ function HealthBar:UpdateHealthBar(unitToken)
 
     local bar = parent.HealthBar
 
-    local health = UnitHealth(unitToken)
-    local maxHealth = UnitHealthMax(unitToken)
+    local health
+    local maxHealth
+
+    if not EZArenaFrames.test then
+        health = UnitHealth(unitToken)
+        maxHealth = UnitHealthMax(unitToken)
+    else
+        health = UnitHealth("player")
+        maxHealth = UnitHealthMax("player")
+    end
 
     bar:SetMinMaxValues(0, maxHealth)
     bar:SetValue(health)
@@ -191,14 +222,22 @@ function HealthBar:Test()
             local parent = EZArenaFrames.anchorFrames[i]
             local bar = parent.HealthBar
 
-            local classID = math.random(1, 13)
+            local classID = EZArenaFrames.testTable["arena" .. i].classID
             local classInfo = GetClassInfo(classID)
             local color = GetClassColor(classInfo and classInfo.classFile)
 
             bar:SetStatusBarColor(color.r, color.g, color.b, color.a)
 
-            local maxHealth = 10000000
-            local health = ceil(math.random((0.3 * maxHealth), maxHealth))
+            local maxHealth
+            local health
+
+            if i == 1 then
+                maxHealth = UnitHealthMax("player")
+                health = UnitHealth("player")
+            else
+                maxHealth = 10000000
+                health = ceil(math.random((0.3 * maxHealth), maxHealth))
+            end
 
             bar:SetMinMaxValues(0, maxHealth)
             bar:SetValue(health)
