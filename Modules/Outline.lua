@@ -196,6 +196,11 @@ function Outline:Test()
         EZArenaFrames.anchorFrames[1].targetOutline:Show()
 
         targetTestTicker = C_Timer.NewTicker(4, function()
+            if not EZArenaFrames.test then
+                targetTestTicker:Cancel()
+                targetTestTicker = nil
+            end
+
             if previousTargetIndex then
                 EZArenaFrames.anchorFrames[previousTargetIndex].targetOutline:Hide()
             end
@@ -218,6 +223,11 @@ function Outline:Test()
         EZArenaFrames.anchorFrames[3].focusOutline:Show()
 
         focusTestTicker = C_Timer.NewTicker(16, function()
+            if not EZArenaFrames.test then
+                focusTestTicker:Cancel()
+                focusTestTicker = nil
+            end
+
             if previousFocusIndex then
                 EZArenaFrames.anchorFrames[previousFocusIndex].focusOutline:Hide()
             end
@@ -234,16 +244,6 @@ function Outline:Test()
         end)
 
     else
-        if targetTestTicker then
-            targetTestTicker:Cancel()
-            targetTestTicker = nil
-        end
-
-        if focusTestTicker then
-            focusTestTicker:Cancel()
-            focusTestTicker = nil
-        end
-
         for i = 1, 3 do
             local parent = EZArenaFrames.anchorFrames[i]
             parent.targetOutline:Hide()
