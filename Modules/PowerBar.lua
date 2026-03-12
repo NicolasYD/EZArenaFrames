@@ -9,14 +9,10 @@ local PowerBar = EZArenaFrames:NewModule(
 -- Localize WoW API functions
 local IsInInstance = IsInInstance
 local CreateFrame = CreateFrame
-local UnitPowerType = UnitPowerType
-local GetArenaOpponentSpec = GetArenaOpponentSpec
-local GetClassColor = C_ClassColor.GetClassColor
-local GetClassInfo = C_CreatureInfo.GetClassInfo
-local GetSpecializationInfoByID = GetSpecializationInfoByID
 local InCombatLockdown = InCombatLockdown
 local UnitPower = UnitPower
-local UnitPowerMax = UnitHealthMax
+local UnitPowerMax = UnitPowerMax
+local UnitPowerType = UnitPowerType
 
 local defaults = {
     profile = {
@@ -58,8 +54,6 @@ end
 
 function PowerBar:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
     if instanceType ~= "arena" then return end
-
-    self:ColorPowerBar()
 end
 
 function PowerBar:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
@@ -67,25 +61,44 @@ function PowerBar:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingUi)
 
     if instanceType ~= "arena" then return end
 
-    self:ColorPowerBar()
 end
 
 function PowerBar:UNIT_POWER_FREQUENT(event, unitToken)
-    if instanceType ~= "arena" then return end
+    if not EZArenaFrames.test then
 
-    self:UpdatePowerBar(unitToken)
+        if instanceType ~= "arena" then return end
+
+        self:UpdatePowerBar(unitToken)
+    else
+        self:UpdatePowerBar("arena1")
+    end
 end
 
 function PowerBar:UNIT_MAXPOWER(event, unitToken)
-    if instanceType ~= "arena" then return end
+    if not EZArenaFrames.test then
 
-    self:UpdatePowerBar(unitToken)
+        if instanceType ~= "arena" then return end
+
+        self:UpdatePowerBar(unitToken)
+    else
+        self:UpdatePowerBar("arena1")
+    end
 end
 
 function PowerBar:UNIT_DISPLAYPOWER(event, unitToken)
-    if instanceType ~= "arena" then return end
+    if not EZArenaFrames.test then
 
-    self:UpdatePowerBar(unitToken)
+        if instanceType ~= "arena" then return end
+
+        self:UpdatePowerBar(unitToken)
+        self:ColorPowerBar(unitToken)
+    else
+        local powerType = UnitPowerType("player")
+
+        self:UpdatePowerBar("arena1")
+        self:ColorPowerBar("arena1", powerType)
+    end
+
 end
 
 function PowerBar:CreatePowerBar()
@@ -163,20 +176,21 @@ function PowerBar:StyleSecureButton()
     end
 end
 
-function PowerBar:ColorPowerBar()
-    for i = 1, 3 do
-        local powerType, powerToken = UnitPowerType("arena" .. i)
-        local color = PowerBarColor[powerToken] or PowerBarColor[powerType]
+function PowerBar:ColorPowerBar(unitToken, testPowerType)
+    local index = unitToIndex[unitToken]
+    if not index then return end
 
-        if color then
-            local r, g, b = color.r, color.g, color.b
-            local parent = EZArenaFrames.anchorFrames[i]
+    local powerType = testPowerType or UnitPowerType(unitToken)
+    local color = PowerBarColor[powerType]
 
-            if parent and parent.PowerBar then
-                local bar = parent.PowerBar
+    if color then
 
-                bar:SetStatusBarColor(r, g, b, 1)
-            end
+        local parent = EZArenaFrames.anchorFrames[index]
+
+        if parent and parent.PowerBar then
+            local bar = parent.PowerBar
+
+            bar:SetStatusBarColor(color.r, color.g, color.b, 1)
         end
     end
 end
@@ -191,8 +205,16 @@ function PowerBar:UpdatePowerBar(unitToken)
 
     local bar = parent.PowerBar
 
-    local power = UnitPower(unitToken)
-    local maxPower = UnitPowerMax(unitToken)
+    local power
+    local maxPower
+
+    if not EZArenaFrames.test then
+        power = UnitPower(unitToken)
+        maxPower = UnitPowerMax(unitToken)
+    else
+        power = UnitPower("player")
+        maxPower = UnitPowerMax("player")
+    end
 
     bar:SetMinMaxValues(0, maxPower)
     bar:SetValue(power)
@@ -204,17 +226,29 @@ function PowerBar:Test()
             local parent = EZArenaFrames.anchorFrames[i]
             local bar = parent.PowerBar
 
-            local classID = math.random(1, 13)
-            local classInfo = GetClassInfo(classID)
-            local color = GetClassColor(classInfo and classInfo.classFile)
+            local maxPower
+            local power
 
-            bar:SetStatusBarColor(color.r, color.g, color.b, color.a)
+            if i == 1 then
+                maxPower = UnitPowerMax("player")
+                power = UnitPower("player")
 
-            local maxHealth = 10000000
-            local health = ceil(math.random((0.3 * maxHealth), maxHealth))
+                local powerType = UnitPowerType("player")
 
-            bar:SetMinMaxValues(0, maxHealth)
-            bar:SetValue(health)
+                self:ColorPowerBar("arena1", powerType)
+            else
+                maxPower = 10000000
+                power = ceil(math.random((0.3 * maxPower), maxPower))
+
+                local classID = EZArenaFrames.testTable["arena" .. i].classID
+                local specID = EZArenaFrames.testTable["arena" .. i].specID
+                local powerType = EZArenaFrames.classIDs[classID].specIDs[specID].powerType
+
+                self:ColorPowerBar("arena" .. i, powerType)
+            end
+
+            bar:SetMinMaxValues(0, maxPower)
+            bar:SetValue(power)
         end
     else
         for i = 1, 3 do
