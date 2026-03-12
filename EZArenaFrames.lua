@@ -254,8 +254,12 @@ function EZArenaFrames:UpdateTestTable()
         local classIDs = EZArenaFrames.classIDs
         local classID = math.random(#classIDs)
 
-        local specIDs = EZArenaFrames.classIDs[classID].specIDs
-        local specID = math.random(#specIDs)
+        local specIDs = {}
+        for key, _ in pairs(EZArenaFrames.classIDs[classID].specIDs) do
+            table.insert(specIDs, key)
+        end
+
+        local specID = specIDs[math.random(#specIDs)]
 
         local raceIDs = EZArenaFrames.classIDs[classID].raceIDs
         local raceID = math.random(#raceIDs)
