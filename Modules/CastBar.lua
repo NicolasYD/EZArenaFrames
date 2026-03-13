@@ -93,7 +93,7 @@ function CastBar:StyleCastBar()
             local bar = parent.CastBar
 
             bar:ClearAllPoints()
-            bar:SetPoint("BOTTOMRIGHT", parent, "BOTTOMLEFT", settings.offsetX, settings.offsetY)
+            bar:SetPoint("TOPRIGHT", parent, "BOTTOMLEFT", settings.offsetX, settings.offsetY)
             bar:SetSize(settings.width, settings.height)
             bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
         end
@@ -112,7 +112,7 @@ function CastBar:StyleSecureButton()
             local secureButton = parent.CastBar
 
             secureButton:ClearAllPoints()
-            secureButton:SetPoint("BOTTOMRIGHT", parent, "BOTTOMLEFT", settings.offsetX, settings.offsetY)
+            secureButton:SetPoint("TOPRIGHT", parent, "BOTTOMLEFT", settings.offsetX, settings.offsetY)
             secureButton:SetSize(settings.width, settings.height)
         end
     end
