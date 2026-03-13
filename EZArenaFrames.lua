@@ -76,6 +76,7 @@ function EZArenaFrames:OnInitialize()
             },
             containerFrame = {
                 locked = false,
+                scale = 1,
             },
             anchorFrames = {
                 width = 40,
@@ -195,8 +196,18 @@ function EZArenaFrames:CreateAnchorFrames()
                 local icon = frame:CreateTexture(nil, "OVERLAY")
 
                 icon:SetAllPoints()
+                icon:SetTexCoord(0.07, 0.93, 0.07, 0.97) -- crop icons
 
                 frame.icon = icon
+            end
+
+            if not frame.bg then
+                local bg = frame:CreateTexture(nil, "BACKGROUND")
+
+                bg:SetAllPoints()
+                bg:SetColorTexture(0, 0, 0, 1)
+
+                frame.bg = bg
             end
 
             frame:Hide()
@@ -237,6 +248,7 @@ function EZArenaFrames:StyleContainerFrame()
 
     frame:SetPoint("CENTER", UIParent)
     frame:SetSize(200, 180)
+    frame:SetScale(settings.scale)
 
     frame.bg:SetAllPoints()
     frame.bg:SetColorTexture(0, 0, 0, 0.5)
