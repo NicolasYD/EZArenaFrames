@@ -246,6 +246,7 @@ function EZArenaFrames:StyleContainerFrame()
 
     local frame = self.containerFrame
 
+    frame:ClearAllPoints()
     frame:SetPoint("CENTER", UIParent)
     frame:SetSize(200, 180)
     frame:SetScale(settings.scale)
