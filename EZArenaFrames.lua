@@ -74,6 +74,9 @@ function EZArenaFrames:OnInitialize()
                     },
                 },
             },
+            containerFrame = {
+                locked = false,
+            },
             anchorFrames = {
                 width = 40,
                 height = 40,
@@ -93,6 +96,7 @@ function EZArenaFrames:OnEnable()
 
     self:RegisterOptions()
 
+    self:CreateContainerFrame()
     self:CreateAnchorFrames()
     self:CreateSecureAnchorFrames()
 end
@@ -160,6 +164,23 @@ function EZArenaFrames:PLAYER_ENTERING_WORLD(event, isInitialLogin, isReloadingU
     end
 end
 
+-- Create container frame
+function EZArenaFrames:CreateContainerFrame()
+    if self.containerFrame then return end
+
+    local frame = CreateFrame("Frame", nil, UIParent)
+
+    if not frame.bg then
+        local bg = frame:CreateTexture(nil, "BACKGROUND")
+
+        frame.bg = bg
+    end
+
+    self.containerFrame = frame
+
+    self:StyleContainerFrame()
+end
+
 -- Create anchor frames
 function EZArenaFrames:CreateAnchorFrames()
     self.anchorFrames = self.anchorFrames or {}
@@ -168,7 +189,7 @@ function EZArenaFrames:CreateAnchorFrames()
         if not self.anchorFrames[i] then
             local name = "EZAF_Arena" .. i .. "Anchor"
 
-            local frame = CreateFrame("Frame", name, UIParent)
+            local frame = CreateFrame("Frame", name, self.containerFrame)
 
             if not frame.icon then
                 local icon = frame:CreateTexture(nil, "OVERLAY")
@@ -197,7 +218,7 @@ function EZArenaFrames:CreateSecureAnchorFrames()
         if not self.secureAnchorFrames[i] then
             local name = "EZAF_Arena" .. i .. "SecureAnchor"
 
-            local frame = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
+            local frame = CreateFrame("Frame", name, self.containerFrame, "SecureHandlerStateTemplate")
 
             RegisterStateDriver(frame, "visibility", "[@arena"..i..",exists] show; hide")
 
@@ -208,13 +229,34 @@ function EZArenaFrames:CreateSecureAnchorFrames()
     self:StyleSecureAnchorFrames()
 end
 
+-- Style container frame
+function EZArenaFrames:StyleContainerFrame()
+    local settings = self.db.profile.containerFrame
+
+    local frame = self.containerFrame
+
+    frame:SetPoint("CENTER", UIParent)
+    frame:SetSize(200, 180)
+
+    frame.bg:SetAllPoints()
+    frame.bg:SetColorTexture(0, 0, 0, 0.5)
+
+    if settings.locked then
+        frame.bg:Hide()
+    else
+        frame.bg:Show()
+    end
+
+    self:MakeFrameMovable(frame, (not settings.locked))
+end
+
 -- Style anchor frames
 function EZArenaFrames:StyleAnchorFrames()
     local settings = self.db.profile.anchorFrames
 
     for index, frame in ipairs(self.anchorFrames) do
         frame:ClearAllPoints()
-        frame:SetPoint("CENTER", UIParent, "CENTER", 0, -(index - 1) * settings.spacingY)
+        frame:SetPoint("TOPLEFT", self.containerFrame, "TOPLEFT", 0, -(index - 1) * settings.spacingY)
         frame:SetSize(settings.width, settings.height)
     end
 end
@@ -229,6 +271,21 @@ function EZArenaFrames:StyleSecureAnchorFrames()
         frame:SetPoint("CENTER", UIParent, "CENTER", 0, -(index - 1) * settings.spacingY)
         frame:SetSize(settings.width, settings.height)
     end
+end
+
+-- Make frame movable
+function EZArenaFrames:MakeFrameMovable(frame, makeMovable)
+    frame:SetMovable(makeMovable)
+    frame:EnableMouse(makeMovable)
+    frame:RegisterForDrag("LeftButton")
+
+    frame:SetScript("OnDragStart", function(f)
+        f:StartMoving()
+    end)
+
+    frame:SetScript("OnDragStop", function(f)
+        f:StopMovingOrSizing()
+    end)
 end
 
 function EZArenaFrames:ShowAnchorFrames(index, show, testIcon)
