@@ -544,7 +544,7 @@ EZArenaFrames.classIDs = {
 			},
 
 			-- Devourer
-			[583] = {
+			[1480] = {
 				powerType = 17, -- Fury
 			},
 		},
