@@ -44,6 +44,7 @@ local GetArenaOpponentSpec = GetArenaOpponentSpec
 local UnitClass = UnitClass
 local GetSpecialization = C_SpecializationInfo.GetSpecialization
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
+local GetSpecializationInfoByID = GetSpecializationInfoByID
 local UnitRace = UnitRace
 
 
@@ -163,21 +164,17 @@ end
 function EZArenaFrames:CreateAnchorFrames()
     self.anchorFrames = self.anchorFrames or {}
 
-    local settings = self.db.profile.anchorFrames
-
     for i = 1, 3 do
         if not self.anchorFrames[i] then
             local name = "EZAF_Arena" .. i .. "Anchor"
 
             local frame = CreateFrame("Frame", name, UIParent)
 
-            frame:SetSize(settings.width, settings.height) -- Invisible frames still need a size or the child frames are not shown
-
-            if not frame.icon then -- for testing
+            if not frame.icon then
                 local icon = frame:CreateTexture(nil, "OVERLAY")
 
                 icon:SetAllPoints()
-                icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+
                 frame.icon = icon
             end
 
@@ -196,15 +193,11 @@ function EZArenaFrames:CreateSecureAnchorFrames()
 
     self.secureAnchorFrames = self.secureAnchorFrames or {}
 
-    local settings = self.db.profile.anchorFrames
-
     for i = 1, 3 do
         if not self.secureAnchorFrames[i] then
             local name = "EZAF_Arena" .. i .. "SecureAnchor"
 
             local frame = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
-
-            frame:SetSize(settings.width, settings.height) -- Invisible frames still need a size or the child frames are not shown
 
             RegisterStateDriver(frame, "visibility", "[@arena"..i..",exists] show; hide")
 
@@ -222,6 +215,7 @@ function EZArenaFrames:StyleAnchorFrames()
     for index, frame in ipairs(self.anchorFrames) do
         frame:ClearAllPoints()
         frame:SetPoint("CENTER", UIParent, "CENTER", 0, -(index - 1) * settings.spacingY)
+        frame:SetSize(settings.width, settings.height)
     end
 end
 
@@ -233,11 +227,21 @@ function EZArenaFrames:StyleSecureAnchorFrames()
     for index, frame in ipairs(self.secureAnchorFrames) do
         frame:ClearAllPoints()
         frame:SetPoint("CENTER", UIParent, "CENTER", 0, -(index - 1) * settings.spacingY)
+        frame:SetSize(settings.width, settings.height)
     end
 end
 
-function EZArenaFrames:ShowAnchorFrames(index, show)
+function EZArenaFrames:ShowAnchorFrames(index, show, testIcon)
     local frame = self.anchorFrames[index]
+
+    local specID = GetArenaOpponentSpec(index)
+    local icon
+
+    if specID then
+        _, _, _, icon = GetSpecializationInfoByID(specID)
+    end
+
+    frame.icon:SetTexture(icon or testIcon or "Interface\\Icons\\INV_Misc_QuestionMark")
 
     if frame then
         if show then
@@ -289,7 +293,25 @@ function EZArenaFrames:Test()
         self:UpdateTestTable()
 
         for i = 1, 3 do
-            self:ShowAnchorFrames(i, true)
+            if i == 1 then
+                local specIndex = GetSpecialization()
+                local icon
+
+                if specIndex then
+                    _, _, _, icon, _ = GetSpecializationInfo(specIndex)
+                end
+
+                self:ShowAnchorFrames(i, true, icon)
+            else
+                local specID = EZArenaFrames.testTable["arena" .. i].specID
+                local icon
+
+                if specID then
+                    _, _, _, icon = GetSpecializationInfoByID(specID)
+                end
+
+                self:ShowAnchorFrames(i, true, icon)
+            end
         end
     elseif self.test then
         self.test = false
