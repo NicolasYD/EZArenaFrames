@@ -60,8 +60,7 @@ function EZArenaFrames:GetOptions()
                                 type = "toggle",
                                 name = "Lock Position",
                                 desc = "Lock the position of the arena frames.",
-                                width = "full",
-                                order = 1,
+                                order = 10,
                                 get = function()
                                     return settings.containerFrame.locked
                                 end,
@@ -70,14 +69,20 @@ function EZArenaFrames:GetOptions()
                                     EZArenaFrames:StyleContainerFrame()
                                 end,
                             },
+                            sep1 = {
+                                type = "description",
+                                name = "",
+                                width = "full",
+                                order = 11
+                            },
                             spacing = {
                                 type = "range",
                                 name = "Spacing",
-                                desc = "Adjust the spacing between the anchor frames.",
+                                desc = "Adjust the spacing between the arena frames.",
                                 min = 0,
                                 max = 200,
                                 step = 1,
-                                order = 2,
+                                order = 20,
                                 get = function()
                                     return settings.anchorFrames.spacingY
                                 end,
@@ -86,6 +91,34 @@ function EZArenaFrames:GetOptions()
                                     EZArenaFrames:StyleAnchorFrames()
                                     EZArenaFrames:StyleSecureAnchorFrames()
                                 end,
+                            },
+                            sep2 = {
+                                type = "description",
+                                name = "",
+                                width = "full",
+                                order = 21
+                            },
+                            scale = {
+                                type = "range",
+                                name = "Scale",
+                                desc = "Adjust the scale of the arena frames.",
+                                min = 0.1,
+                                max = 3,
+                                step = 0.1,
+                                order = 30,
+                                get = function()
+                                    return settings.containerFrame.scale
+                                end,
+                                set = function(_, value)
+                                    settings.containerFrame.scale = value
+                                    EZArenaFrames:StyleContainerFrame()
+                                end,
+                            },
+                            sep3 = {
+                                type = "description",
+                                name = "",
+                                width = "full",
+                                order = 31
                             },
                         },
                     },
